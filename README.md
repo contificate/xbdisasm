@@ -5,4 +5,6 @@ To compile: `gcc -O2 main.c -o xbdisasm -lreadline -lcapstone -s`
 
 <p align="center">
   <img width="70%" alt="screenshot" src="screen.png" />
-</p
+</p>
+
+[![asciicast](https://asciinema.org/a/Vxmsk5mF4GGujsAPydH2mHIVq.svg)](https://asciinema.org/a/Vxmsk5mF4GGujsAPydH2mHIVq)
