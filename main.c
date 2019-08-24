@@ -19,6 +19,7 @@
 #define XBDM_OK 201
 #define XBDM_READ_OK 202
 #define RESPONSE_HDR_LEN (1 << 5)
+#define XBOX_ARCH (CS_ARCH_PPC | CS_MODE_LITTLE_ENDIAN)
 
 bool connect_to_console(const char *ip, int *sock) {
   if (!(ip && sock)) {
@@ -50,7 +51,7 @@ bool connect_to_console(const char *ip, int *sock) {
 
 cs_err init_capstone(csh *handle) {
   /* Attain capstone engine handle */
-  cs_err err = cs_open(CS_ARCH_PPC, (CS_ARCH_PPC | CS_MODE_LITTLE_ENDIAN), handle);
+  cs_err err = cs_open(CS_ARCH_PPC, XBOX_ARCH, handle);
   if (err != CS_ERR_OK)
     return err;
 
@@ -83,7 +84,8 @@ void disassemble_response(uint64_t addr, int socket, csh handle) {
     /* Disassemble single instruction */
     const uint8_t *code = (uint8_t *) &bytes;
     if (cs_disasm_iter(handle, &code, &size, &addr, instr)) {
-      printf("0x%" PRIx64 ": " KGRN "%s" RST " %s", (addr - 4), instr->mnemonic, instr->op_str);
+      printf("0x%" PRIx64 ": " KGRN "%s" RST " %s", (addr - 4), 
+             instr->mnemonic, instr->op_str);
       printf(KRED " [%s]\n" RST, buffer);
     }
   }
@@ -95,7 +97,8 @@ void disassemble_response(uint64_t addr, int socket, csh handle) {
 bool write_get_mem(int socket, uint32_t address, unsigned count) {
   /* Format getmem command */
   char buffer[64];
-  if (snprintf(buffer, 64, "getmem addr=0x%08x length=%d\n", address, (count << 2)) < 0) {
+  if (snprintf(buffer, 64, "getmem addr=0x%08x length=%d\n", 
+               address, (count << 2)) < 0) {
     fputs("Failed to format debug string\n", stderr);
     return false;
   }
